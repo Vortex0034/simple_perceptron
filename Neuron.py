@@ -118,7 +118,7 @@ if __name__ == "__main__":
     X_test = test_samp.iloc[:, :11].values
     y_train = pd.get_dummies(train_samp.iloc[:,11]).values # One-Hot Encoding
     y_test = pd.get_dummies(test_samp.iloc[:,11]).values # One-Hot Encoding
-    ppn = Perception(0.001, [11,7,7,2], 3000) # скорость обучения - 0.001, 4 слоя, 3000 эпох
+    ppn = Perception(0.001, [11,7,7,2], 5000) # скорость обучения - 0.001, 4 слоя, 5000 эпох
     ppn.fit(X_train, y_train)
     p = ppn.predict(X_test)
     
