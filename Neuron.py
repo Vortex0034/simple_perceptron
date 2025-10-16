@@ -1,5 +1,6 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+import os
 import numpy as np
 
 class Layer:
@@ -98,7 +99,9 @@ class Perception:
 
 
 if __name__ == "__main__":
-    df = pd.read_csv("data.csv")
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    file_path = os.path.join(current_dir, 'data.csv')
+    df = pd.read_csv(file_path)
     proc_of_test = 10
 
     df = df.sample(frac=1)
