@@ -1,6 +1,4 @@
 import pandas as pd
-import matplotlib.pyplot as plt
-import os
 import numpy as np
 
 class Layer:
@@ -61,17 +59,17 @@ class Layer:
 
 class Perception:
 
-    def __init__(self, eta, layers_counts, iters, start_random_state=1):
+    def __init__(self, eta, layers, iters, start_random_state=1):
         self.eta = eta
         self.costs = []
-        self.layers_len = len(layers_counts)
+        self.layers_len = len(layers)
         self.layers = []
         if self.layers_len > 1:
-            self.layers = [Layer(layers_counts[0], layers_counts[1], 0, start_random_state, is_first=True)]
+            self.layers = [Layer(layers[0], layers[1], 0, start_random_state, is_first=True)]
         self.iters = iters
         for i in range(1, self.layers_len - 1):
-            self.layers.append(Layer(layers_counts[i], layers_counts[i+1], i, start_random_state+i, False))
-        self.layers.append(Layer(layers_counts[self.layers_len-1], layers_counts[self.layers_len-1], self.layers_len - 1, start_random_state, is_last=True))
+            self.layers.append(Layer(layers[i], layers[i+1], i, start_random_state+i, False))
+        self.layers.append(Layer(layers[self.layers_len-1], layers[self.layers_len-1], self.layers_len - 1, start_random_state, is_last=True))
 
     def fit(self, X, y):
         for i in range(self.iters):
@@ -98,32 +96,3 @@ class Perception:
         return predicted - y
 
 
-if __name__ == "__main__":
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    file_path = os.path.join(current_dir, 'data.csv')
-    df = pd.read_csv(file_path)
-    proc_of_test = 10
-
-    df = df.sample(frac=1)
-    n = len(df)
-    print(f'Размер датасета: {n}')
-    test_n = n * proc_of_test // 100
-    train_samp = df.iloc[:n - test_n, :]
-    test_samp = df.iloc[n-test_n:,:]
-    
-    print(f'Размер тренировочной выборки: {len(train_samp)}')
-    print(f'Размер тестовой выборки: {len(test_samp)}')
-
-    X_train = train_samp.iloc[:,:11].values
-    X_test = test_samp.iloc[:, :11].values
-    y_train = pd.get_dummies(train_samp.iloc[:,11]).values # One-Hot Encoding
-    y_test = pd.get_dummies(test_samp.iloc[:,11]).values # One-Hot Encoding
-    ppn = Perception(0.001, [11,7,7,2], 5000) # скорость обучения - 0.001, 4 слоя, 5000 эпох
-    ppn.fit(X_train, y_train)
-    p = ppn.predict(X_test)
-    
-    plt.plot(list(range(len(ppn.costs))), ppn.costs)
-    plt.xlabel("Номер эпохи")
-    plt.ylabel("Количество ошибок при обучении")
-    print(f'Ошибок в предсказании:{((p[:,1] != y_test[:,1]).sum())} (из {len(test_samp)})')
-    plt.show()
